@@ -4,11 +4,14 @@ from __future__ import print_function
 
 import shutil
 
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg19 import VGG19
-from keras.applications.resnet50 import ResNet50
-from keras.layers import Input
-from scipy.misc import imsave
+import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
+
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.vgg19 import VGG19
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.layers import Input
+import imageio
 from utils_tmp import *
 import sys
 import os
@@ -77,9 +80,9 @@ adversial_num = 0
 
 total_perturb_adversial = 0
 
-for i in xrange(img_num):
+for i in range(img_num):
 
-    start_time = time.clock()
+    start_time = time.time()
 
     img_list = []
 
@@ -154,7 +157,7 @@ for i in xrange(img_num):
         iterate = K.function([input_tensor], grads_tensor_list)
 
         # we run gradient ascent for some steps
-        for iters in xrange(iteration_times):
+        for iters in range(iteration_times):
 
             loss_neuron_list = iterate([gen_img])
 
@@ -200,11 +203,11 @@ for i in xrange(img_num):
 
                 save_img = save_dir + decode_label(pred1) + '-' + decode_label(orig_pred) + '-' + str(get_signature()) + '.png'
 
-                imsave(save_img, gen_img_deprocessed)
+                imageio.imwrite(save_img, gen_img_deprocessed)
 
                 adversial_num += 1
 
-    end_time = time.clock()
+    end_time = time.time()
 
     print('covered neurons percentage %d neurons %.3f'
           % (len(model_layer_times2), neuron_covered(model_layer_times2)[2]))
